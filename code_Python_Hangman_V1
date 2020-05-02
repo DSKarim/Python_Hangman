@@ -1,0 +1,243 @@
+import string
+# from os import system, name
+allowed_letters = set(string.ascii_lowercase)
+
+
+def hide_my_word(the_word):
+    win_word_hided = list(the_word)
+    i = 0
+    for i in range(len(win_word_hided)):
+        win_word_hided[i] = '-'
+        i += 1
+    win_word_hided = ''.join(win_word_hided)
+    return win_word_hided
+
+
+def show_my_word(hided_word,win_word, letter):
+    win_word_hided = list(hided_word)
+    win_word_to_hide = list(win_word)
+    i = 0
+    for i in range(len(win_word_to_hide)):
+        if win_word_to_hide[i] == letter:
+            win_word_hided[i] = letter
+        i += 1
+    win_word_hided = ''.join(win_word_hided)
+    return win_word_hided
+
+
+# def clear():
+#
+#     # for windows
+#     if name == 'nt':
+#         _ = system('cls')
+#
+#     # for mac and linux(here, os.name is 'posix')
+#     else:
+#         _ = system('clear')
+
+def player_state(s, with_without_remaining):
+    hang_state = ("""
+    -----
+    |   |
+    |
+    |
+    |
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    |
+    |
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    |  -+-
+    |
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-
+    |
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |   | 
+    |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |   | 
+    |  |
+    |
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |   | 
+    |  | 
+    |  | 
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |   | 
+    |  | | 
+    |  | 
+    |
+    --------
+    """,
+    """
+    -----
+    |   |
+    |   0
+    | /-+-\ 
+    |   | 
+    |   | 
+    |  | | 
+    |  | | 
+    |
+    --------
+    """,
+    """
+    --------
+    Winner !
+    
+     \ 0 /
+      -+-
+       | 
+       | 
+      | | 
+      | | 
+    --------
+    """)
+    if with_without_remaining == 'with':
+        print(hang_state[s], '\n{} tries remaining'.format(10 - s))
+    else:
+        print(hang_state[s], '\n')
+
+
+print('H A N G M A N')
+while True:
+    menu_input = input('\nType "play" to play the game, "exit" to quit: ').lower()
+    if menu_input == 'exit':
+        break
+    elif menu_input == 'play':
+        while True:
+            print('\nType "back" to go to the menu or the word to guess followed by a hint word : ')
+            game_master_input = input('example : "dog animal" : ').lower()
+            if game_master_input == 'back':
+                break
+            else:
+                game_master_input = game_master_input.split()
+                while len(game_master_input) != 2:
+                    game_master_input = input('\nplease, type the word to guess followed by a hint word : ').lower().split()
+                if input('is "{}" the word to guess and "{}" the hint word ? "yes" or "no" ?'.format(game_master_input[0],
+                                                                                                     game_master_input[1])).lower() == "yes":
+                    # clear()
+                    print('\n'*10000)
+                    word_win = game_master_input[0]
+                    word_hint = game_master_input[1]
+                    word_hided = hide_my_word(word_win)
+                    added_letters = set()
+                    i = 0
+                    print('Player : you have to find a {} letters word. hint : {}'.format(len(game_master_input[0]),
+                                                                                          game_master_input[1]))
+                    print('you have 10 tries. good luck !')
+                    while i < 10:
+                        player_state(i, 'with')
+                        print('\n', word_hided, sep='')
+                        player_letter = input('Input a letter:').lower()
+                        if len(player_letter) > 1:
+                            print('You should print a single letter')
+                        elif player_letter not in allowed_letters:
+                            print('It is not an ASCII lowercase letter')
+                        elif player_letter in added_letters:
+                            print('You already typed this letter')
+                        else:
+                            added_letters.add(player_letter)
+                            if player_letter in word_win:
+                                word_hided = show_my_word(word_hided, word_win, player_letter)
+                                if '-' not in set(word_hided):
+                                    break
+                            else:
+                                print('No such letter in the word')
+                                i += 1
+
+                    if word_hided == word_win:
+                        player_state(11, 'without')
+                        print('You guessed the word {}!\nYou survived!'.format(word_win))
+                    else:
+                        player_state(10, 'without')
+                        print('You are hanged!\nYou failed to guess {}!'.format(word_win))
+    else:
+        continue
